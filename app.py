@@ -359,7 +359,7 @@ def start_download():
 
             if fmt == 'video':
                 res = {'4k': '2160', '1080p': '1080', '720p': '720', '480p': '480'}.get(quality, '1080')
-                ydl_opts['format'] = f'bv*[height<={res}]+ba/b[height<={res}]/ba/b'
+                ydl_opts['format'] = f'bestvideo[height<={res}]+bestaudio/bestvideo+bestaudio/best/bestaudio'
                 ydl_opts['merge_output_format'] = 'mp4'
                 ydl_opts['writethumbnail'] = True
                 ydl_opts['postprocessors'] = [{'key': 'FFmpegMetadata'}, {'key': 'EmbedThumbnail'}]
