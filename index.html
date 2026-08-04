@@ -21,8 +21,7 @@
             <p class="subtitle">Premium Video &amp; Music Downloader (4K &amp; Playlist Support)</p>
         </header>
 
-
-        <!-- URL Tab -->
+        <!-- URL Input -->
         <section id="urlTab" class="tab-content">
             <div class="input-group">
                 <input type="text" id="urlInput" placeholder="Paste YouTube / Spotify URL here..." autocomplete="off">
@@ -47,18 +46,34 @@
             <button id="downloadBtn">Start Download</button>
         </section>
 
+        <!-- Progress Area -->
+        <div id="progressArea" style="display:none; margin-top:1.5rem;">
 
-        <!-- Terminal (shared) -->
-        <div id="terminalArea" style="display:none; margin-top:1.5rem;">
-            <p style="font-size:0.8rem; color:var(--text-dim); margin-bottom:0.5rem; font-family:monospace;">Terminal
-                Output:</p>
-            <div id="terminalBody"
-                style="background:rgba(0,0,0,0.4); border:1px solid var(--glass-border); border-radius:12px; padding:1rem; height:160px; overflow-y:auto; font-family:'Courier New',Courier,monospace; font-size:0.75rem; color:#4ade80; line-height:1.6; scroll-behavior:smooth;">
-                <div>Welcome to MultiLoader Engine...</div>
+            <!-- Status Label -->
+            <div id="statusLabel" class="status-label">
+                <span id="statusIcon">⏳</span>
+                <span id="statusText">Preparing...</span>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="progress-track">
+                <div id="progressBar" class="progress-fill" style="width:0%"></div>
+            </div>
+            <div class="progress-meta">
+                <span id="progressPct">0%</span>
+                <span id="progressTrack"></span>
+            </div>
+
+            <!-- Terminal -->
+            <div class="terminal-wrap">
+                <p class="terminal-title">▸ Log</p>
+                <div id="terminalBody" class="terminal-body">
+                    <div>Welcome to MultiLoader Engine...</div>
+                </div>
             </div>
         </div>
 
-        <!-- Integrated Footer -->
+        <!-- Footer -->
         <div style="margin-top: 2rem; text-align: center; border-top: 1px solid var(--glass-border); padding-top: 1.5rem;">
             <p style="font-size: 0.85rem; color: var(--text-dim); margin-bottom: 1rem;">
                 Created with ❤️ by <span style="color: var(--text-main); font-weight: 600;">CoR3 Coding-R</span>
@@ -78,7 +93,7 @@
                 </a>
             </div>
             <p style="font-size: 0.7rem; color: var(--text-dim); margin-top: 1rem; opacity: 0.6;">
-                &copy; 2026 MultiLoader — Open Source & Community Driven
+                &copy; 2026 MultiLoader — Open Source &amp; Community Driven
             </p>
         </div>
     </main>

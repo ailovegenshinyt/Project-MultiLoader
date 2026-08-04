@@ -38,7 +38,7 @@ pip install -r requirements.txt
 python app.py
 ```
 
-Access at: `http://localhost:7860`
+Access at: `http://localhost:8080`
 
 ## HuggingFace Spaces
 The app is optimized for HuggingFace Spaces out-of-the-box. No secrets required!
