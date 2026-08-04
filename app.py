@@ -333,6 +333,7 @@ def start_download():
             ydl_opts = {
                 'outtmpl': os.path.join(temp_dir, '%(playlist_index)s - %(title)s.%(ext)s'
                                         if is_playlist else '%(title)s.%(ext)s'),
+                'cookiefile': 'cookies.txt', 
                 'quiet': True, 'no_warnings': True,
                 'user_agent': random.choice([
                     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
