@@ -188,8 +188,6 @@ Love MultiLoader? **Help us make it even better!**
 - 🔧 Submit code improvements
 - 📝 Improve documentation
 
-[Read Contributing Guide →](CONTRIBUTING.md)
-
 ---
 
 ## ⚠️ Legal Disclaimer
@@ -212,7 +210,7 @@ This tool is for **personal and educational use only**.
 
 ## 👤 Creator
 
-**CoR3 Coding-R** — Open source enthusiast  
+**CoR3 · Zero** — Open source enthusiast  
 - GitHub: [@ailovegenshinyt](https://github.com/ailovegenshinyt)
 
 ---
@@ -225,4 +223,4 @@ See [LICENSE](LICENSE) for details.
 
 ---
 
-**Made with ❤️ by the Open Source Community**
+**Made with ❤️ by CoR3 · Zero**
