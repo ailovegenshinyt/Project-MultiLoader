@@ -209,10 +209,8 @@ Retention: Configure in app.py
 
 ## 📞 Need Help?
 
-- 💬 [Ask Questions](https://github.com/ailovegenshinyt/Project-MultiLoader/discussions)
 - 🐛 [Report Issues](https://github.com/ailovegenshinyt/Project-MultiLoader/issues)
 - 📖 [Read Docs](https://github.com/ailovegenshinyt/Project-MultiLoader#readme)
-- 🚀 [Check Roadmap](https://github.com/ailovegenshinyt/Project-MultiLoader/blob/main/ROADMAP.md)
 
 ---
 
