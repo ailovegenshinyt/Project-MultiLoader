@@ -1,4 +1,3 @@
-```
 # MultiLoader 🎵
 
 **Premium Multi-Source Downloader with Liquid Glass UI**
@@ -34,7 +33,6 @@ Built with a modern glassmorphism interface, real-time progress streaming, and a
 | Audio  | MP3    | 320 / 256 / 192 / 128 kbps        |
 | Audio  | WAV    | Lossless                           |
 
----
 
 ## 🚀 Quick Start
 
