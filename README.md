@@ -36,17 +36,7 @@ MultiLoader is a **high-performance, self-hosted downloader** for YouTube and Sp
 
 ## 🖼️ Screenshots
 
-<!-- Add screenshots here for maximum impact -->
-```
-╔════════════════════════════════════════╗
-║   MultiLoader - Liquid Glass UI        ║
-║                                        ║
-║  🎵 Paste YouTube/Spotify URL          ║
-║  📊 Choose format & quality            ║
-║  ⚡ Watch real-time progress           ║
-║  💾 Download with embedded metadata    ║
-╚════════════════════════════════════════╝
-```
+<img width="1118" height="604" alt="image" src="https://github.com/user-attachments/assets/9a6bbebb-5636-4031-b405-930809b3023e" />
 
 ---
 
