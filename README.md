@@ -178,21 +178,6 @@ Project-MultiLoader/
 
 ---
 
-## 🚧 Roadmap
-
-- ✅ YouTube videos & playlists
-- ✅ Spotify tracks & albums
-- ✅ Liquid Glass UI
-- ⏳ TikTok & Instagram support
-- ⏳ Batch download scheduling
-- ⏳ Format conversion (MP4→WebM, etc.)
-- ⏳ Docker containerization
-- ⏳ PyPI package release
-
-[See full roadmap →](ROADMAP.md)
-
----
-
 ## 🤝 Contributing
 
 Love MultiLoader? **Help us make it even better!** 
@@ -217,11 +202,11 @@ This tool is for **personal and educational use only**.
 
 ---
 
-## 📊 Stats & Support
+## 📊 Support
 
-- **Stars:** Show love with a ⭐ if this helped you!
 - **Issues:** [Report bugs](https://github.com/ailovegenshinyt/Project-MultiLoader/issues)
 - **Discussions:** [Join community](https://github.com/ailovegenshinyt/Project-MultiLoader/discussions)
+- **Stars:** Show love with a ⭐
 
 ---
 
@@ -229,7 +214,6 @@ This tool is for **personal and educational use only**.
 
 **CoR3 Coding-R** — Open source enthusiast  
 - GitHub: [@ailovegenshinyt](https://github.com/ailovegenshinyt)
-- 🌟 If you like this project, please star it!
 
 ---
 
@@ -237,20 +221,7 @@ This tool is for **personal and educational use only**.
 
 **MIT License** — You're free to use, modify, and share this project.
 
-```
-Copyright © 2026 MultiLoader Contributors
-See LICENSE file for details
-```
-
----
-
-## 🔗 Quick Links
-
-- 📖 [User Guide](USERS_GUIDE.md)
-- 🚀 [Roadmap](ROADMAP.md)
-- 🐛 [Report Issue](https://github.com/ailovegenshinyt/Project-MultiLoader/issues)
-- 💬 [Join Discussion](https://github.com/ailovegenshinyt/Project-MultiLoader/discussions)
-- ⭐ [Star on GitHub](https://github.com/ailovegenshinyt/Project-MultiLoader)
+See [LICENSE](LICENSE) for details.
 
 ---
 
