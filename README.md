@@ -65,14 +65,13 @@ When you start the app you will see a menu:
 #### To use Public mode (ngrok):
 
 1. Get a free authtoken from [ngrok.com](https://dashboard.ngrok.com/get-started/your-authtoken)
-2. Open `app.py` and find this line (around line 651):
+2. Open `.env` and set your authtoken:
 
-```python
-NGROK_AUTHTOKEN = "YOUR_NGROK_AUTNTOKEN"
+```env
+NGROK_AUTHTOKEN=YOUR_NGROK_AUTHTOKEN
 ```
 
-3. Replace `"YOUR_NGROK_AUTNTOKEN"` with your real ngrok authtoken
-4. Run the app again and choose Public mode
+3. Run `python app.py` and choose **Ngrok Tunnel** (or enter your token directly when prompted during startup)
 
 ---
 
