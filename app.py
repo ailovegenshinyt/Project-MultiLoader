@@ -173,10 +173,18 @@ def background_cleanup():
 threading.Thread(target=background_cleanup, daemon=True).start()
 
 
+# ── Middleware / Hooks ───────────────────────────────────────────────────
+@app.after_request
+def add_header(response):
+    response.headers['ngrok-skip-browser-warning'] = 'true'
+    return response
+
+
 # ── Routes ────────────────────────────────────────────────────────────────
 @app.route('/')
 def index():
     return send_file('index.html')
+
 
 
 @app.route('/download', methods=['POST'])
@@ -515,7 +523,176 @@ def serve_file(filename):
     return send_file(fp, as_attachment=True, download_name=filename) if os.path.exists(fp) else ("File not found", 404)
 
 
+
+# ── Terminal Colors (Windows VT100 auto-enable) ───────────────────────────────
+def _enable_ansi():
+    """Force Windows CMD to interpret ANSI escape codes."""
+    if os.name == 'nt':
+        try:
+            import ctypes
+            kernel32 = ctypes.windll.kernel32
+            handle = kernel32.GetStdHandle(-11)  # STD_OUTPUT_HANDLE
+            mode = ctypes.c_ulong()
+            kernel32.GetConsoleMode(handle, ctypes.byref(mode))
+            # ENABLE_VIRTUAL_TERMINAL_PROCESSING = 0x0004
+            kernel32.SetConsoleMode(handle, mode.value | 0x0004)
+        except Exception:
+            pass
+
+_enable_ansi()
+
+# ANSI shortcuts
+_R  = '\033[0m'
+_B  = '\033[1m'          # Bold
+_DM = '\033[2m'          # Dim
+_MG = '\033[95m'         # Bright Magenta
+_CY = '\033[96m'         # Bright Cyan
+_GN = '\033[92m'         # Bright Green
+_YL = '\033[93m'         # Bright Yellow
+_RD = '\033[91m'         # Bright Red
+_BL = '\033[94m'         # Bright Blue
+_GY = '\033[90m'         # Dark Gray
+
+
+def _c(color, text, bold=False):
+    prefix = _B if bold else ''
+    return f"{prefix}{color}{text}{_R}"
+
+
+def print_banner():
+    lines = [
+        r"  ███╗   ███╗██╗   ██╗██╗  ████████╗██╗      ██████╗  █████╗ ██████╗ ███████╗██████╗ ",
+        r"  ████╗ ████║██║   ██║██║  ╚══██╔══╝██║     ██╔═══██╗██╔══██╗██╔══██╗██╔════╝██╔══██╗",
+        r"  ██╔████╔██║██║   ██║██║     ██║   ██║     ██║   ██║███████║██║  ██║█████╗  ██████╔╝",
+        r"  ██║╚██╔╝██║██║   ██║██║     ██║   ██║     ██║   ██║██╔══██║██║  ██║██╔══╝  ██╔══██╗",
+        r"  ██║ ╚═╝ ██║╚██████╔╝███████╗██║   ███████╗╚██████╔╝██║  ██║██████╔╝███████╗██║  ██║",
+        r"  ╚═╝     ╚═╝ ╚═════╝ ╚══════╝╚═╝   ╚══════╝ ╚═════╝ ╚═╝  ╚═╝╚═════╝ ╚══════╝╚═╝  ╚═╝",
+    ]
+    # Gradient: magenta → cyan across lines
+    colors = [_MG, _MG, '\033[38;5;171m', '\033[38;5;135m', _CY, _CY]
+    print()
+    for line, color in zip(lines, colors):
+        print(f"{_B}{color}{line}{_R}")
+    print()
+    tag_line = (
+        f"  {_GY}◈{_R}  "
+        f"{_c(_CY,'Premium Video & Music Downloader')}  "
+        f"{_GY}|{_R}  "
+        f"{_c(_MG,'YouTube')} {_GY}•{_R} {_c(_GN,'Spotify')}  "
+        f"{_GY}|{_R}  "
+        f"{_c(_YL,'4K & Playlist Support')}"
+        f"  {_GY}◈{_R}"
+    )
+    print(tag_line)
+    print()
+    print(f"  {_GY}{'─' * 78}{_R}")
+    print()
+
+
+def startup_menu():
+    """Interactive startup menu — choose Local or Ngrok access mode."""
+    print_banner()
+
+    W = 46
+    border_color = _CY
+    print(f"  {_B}{border_color}╔{'═' * W}╗{_R}")
+    print(f"  {_B}{border_color}║{'  🚀  ACCESS MODE SETUP  '.center(W)}║{_R}")
+    print(f"  {_B}{border_color}╠{'═' * W}╣{_R}")
+    print(f"  {_B}{border_color}║{_R}  {_c(_GN,'[1]',True)}  {_c(_YL,'🏠  Local Only')}"
+          f"{'':12}{_GY}localhost:8080{_R}      {_B}{border_color}║{_R}")
+    print(f"  {_B}{border_color}║{_R}  {_c(_GN,'[2]',True)}  {_c(_MG,'🌐  Ngrok Tunnel')}"
+          f"{'':10}{_GY}public URL anywhere{_R} {_B}{border_color}║{_R}")
+    print(f"  {_B}{border_color}╚{'═' * W}╝{_R}")
+    print()
+
+    while True:
+        try:
+            choice = input(f"  {_B}{_CY}❯ Choose mode [1/2]:{_R} ").strip()
+        except (EOFError, KeyboardInterrupt):
+            choice = '1'
+
+        if choice == '1':
+            return 'local'
+        elif choice == '2':
+            return 'ngrok'
+        else:
+            print(f"  {_RD}⚠  Invalid choice. Please enter 1 or 2.{_R}")
+
+
+def _ensure_pyngrok():
+    """Try to import pyngrok, auto-install if missing, return module or None."""
+    try:
+        import importlib.util
+        if importlib.util.find_spec("pyngrok") is None:
+            raise ImportError("not installed")
+        from pyngrok import ngrok
+        return ngrok
+    except ImportError:
+        print(f"\n  {_YL}⚙  pyngrok not found — auto-installing...{_R}")
+        result = subprocess.run(
+            [sys.executable, '-m', 'pip', 'install', 'pyngrok', '-q'],
+            capture_output=True, text=True
+        )
+        if result.returncode != 0:
+            print(f"  {_RD}❌  Install failed:{_R} {result.stderr.strip()}")
+            return None
+        try:
+            from pyngrok import ngrok
+            print(f"  {_GN}✔  pyngrok installed successfully!{_R}")
+            return ngrok
+        except ImportError as e:
+            print(f"  {_RD}❌  Still cannot import pyngrok: {e}{_R}")
+            return None
+
+
 if __name__ == '__main__':
+    import sys
+    PORT = 8080
+    NGROK_AUTHTOKEN = "37gjLxR7bQG8mgWaSwZ6zj9JIBn_3HkskeXSg9MasJs8BQP5k"
+
+    mode = startup_menu()
+
+    if mode == 'ngrok':
+        ngrok = _ensure_pyngrok()
+
+        if ngrok is None:
+            print(f"\n  {_YL}⚠  Falling back to Local mode.{_R}\n")
+        else:
+            try:
+                print(f"\n  {_CY}⚙  Authenticating with ngrok...{_R}")
+                ngrok.set_auth_token(NGROK_AUTHTOKEN)
+
+                print(f"  {_CY}🔌  Opening tunnel on port {PORT}...{_R}")
+                tunnel = ngrok.connect(PORT)
+                public_url = tunnel.public_url
+
+                pad = 40
+                url_display = public_url.ljust(pad)
+                print()
+                print(f"  {_B}{_GN}╔{'═' * (pad + 22)}╗{_R}")
+                print(f"  {_B}{_GN}║{'':3}🌐  NGROK TUNNEL ACTIVE{'':{pad - 1}}║{_R}")
+                print(f"  {_B}{_GN}╠{'═' * (pad + 22)}╣{_R}")
+                print(f"  {_B}{_GN}║{_R}  {_GY}Public URL :{_R}  {_B}{_CY}{url_display}{_R}  {_B}{_GN}║{_R}")
+                print(f"  {_B}{_GN}║{_R}  {_GY}Local URL  :{_R}  {_GY}http://localhost:{PORT}{' ' * (pad - 13)}{_B}{_GN}║{_R}")
+                print(f"  {_B}{_GN}╚{'═' * (pad + 22)}╝{_R}")
+                print()
+                print(f"  {_GY}Share the public URL above to access MultiLoader from anywhere.{_R}")
+                print(f"  {_GY}Press Ctrl+C to stop the server and disconnect the tunnel.{_R}")
+                print()
+
+            except Exception as e:
+                import traceback
+                print(f"\n  {_RD}❌  Ngrok error: {e}{_R}")
+                traceback.print_exc()
+                print(f"  {_YL}⚠  Falling back to Local mode.{_R}\n")
+    else:
+        print()
+        print(f"  {_GN}✔  Starting in Local mode →  {_B}{_CY}http://localhost:{PORT}{_R}")
+        print()
+
+    print(f"  {_GY}{'─' * 78}{_R}")
+    print()
+
     # use_reloader=False is CRITICAL — prevents Flask from restarting when a
     # zip/mp3 is written to disk, which would wipe the downloads folder.
-    app.run(host='0.0.0.0', port=8080, debug=False, use_reloader=False)
+    app.run(host='0.0.0.0', port=PORT, debug=False, use_reloader=False)

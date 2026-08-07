@@ -67,7 +67,10 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const res = await fetch('/download', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'ngrok-skip-browser-warning': 'true'
+                },
                 body: JSON.stringify({ url, format: fmt, quality }),
             });
             if (!res.ok) {
