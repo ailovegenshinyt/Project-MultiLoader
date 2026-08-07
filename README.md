@@ -135,4 +135,3 @@ GitHub: [ailovegenshinyt](https://github.com/ailovegenshinyt)
 MIT License — feel free to use, modify, and distribute.
 
 © 2026 MultiLoader — Open Source & Community Driven
-```
