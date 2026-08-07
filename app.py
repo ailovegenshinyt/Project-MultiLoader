@@ -648,7 +648,6 @@ def _ensure_pyngrok():
 if __name__ == '__main__':
     import sys
     PORT = 8080
-    NGROK_AUTHTOKEN = "YOUR_NHROK_AUTNTOKEN"
 
     mode = startup_menu()
 
@@ -659,10 +658,24 @@ if __name__ == '__main__':
             print(f"\n  {_YL}⚠  Falling back to Local mode.{_R}\n")
         else:
             try:
-                print(f"\n  {_CY}⚙  Authenticating with ngrok...{_R}")
-                ngrok.set_auth_token(NGROK_AUTHTOKEN)
+                authtoken = os.environ.get("NGROK_AUTHTOKEN", "").strip()
+                if authtoken.upper() in ["YOUR_NGROK_AUTHTOKEN", "YOUR_AUTHTOKEN", ""]:
+                    authtoken = ""
 
-                print(f"  {_CY}🔌  Opening tunnel on port {PORT}...{_R}")
+                if not authtoken:
+                    print(f"\n  {_CY}🔑  Ngrok Authtoken setup (for unique dynamic URLs):{_R}")
+                    print(f"  {_GY}    Tip: Add NGROK_AUTHTOKEN=your_token to your .env file to skip this step!{_R}")
+                    print(f"  {_GY}    Get your free token at: https://dashboard.ngrok.com/get-started/your-authtoken{_R}")
+                    try:
+                        authtoken = input(f"  {_B}{_CY}❯ Enter your Ngrok Auth Token (or press Enter to use saved system token):{_R} ").strip()
+                    except (EOFError, KeyboardInterrupt):
+                        authtoken = ""
+
+                if authtoken:
+                    print(f"\n  {_CY}⚙  Authenticating with ngrok...{_R}")
+                    ngrok.set_auth_token(authtoken)
+
+                print(f"  {_CY}🔌  Opening unique tunnel on port {PORT}...{_R}")
                 tunnel = ngrok.connect(PORT)
                 public_url = tunnel.public_url
 
