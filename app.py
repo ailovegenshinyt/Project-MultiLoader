@@ -648,7 +648,7 @@ def _ensure_pyngrok():
 if __name__ == '__main__':
     import sys
     PORT = 8080
-    NGROK_AUTHTOKEN = "37gjLxR7bQG8mgWaSwZ6zj9JIBn_3HkskeXSg9MasJs8BQP5k"
+    NGROK_AUTHTOKEN = "YOUR_NHROK_AUTNTOKEN"
 
     mode = startup_menu()
 
