@@ -49,7 +49,7 @@ cd Project-MulitLoader
 pip install -r requirements.txt
 ```
 
-> **Note:** You also need [FFmpeg](https://ffmpeg.org/) installed and available in your system PATH.
+> **Note:** FFmpeg is automatically installed for free via `requirements.txt` (`imageio-ffmpeg`). If you already have [FFmpeg](https://ffmpeg.org/) installed on your machine PATH, MultiLoader will automatically use your system version.
 
 ### 3. Run the app
 

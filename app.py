@@ -26,6 +26,39 @@ os.makedirs(DOWNLOAD_FOLDER, exist_ok=True)
 tasks = {}
 
 
+def _ensure_ffmpeg():
+    """Ensure ffmpeg binary is available. Auto-install imageio-ffmpeg if missing from PATH."""
+    import sys
+    ffmpeg_exe = shutil.which('ffmpeg')
+    if ffmpeg_exe:
+        return ffmpeg_exe
+
+    try:
+        import imageio_ffmpeg
+        ffmpeg_exe = imageio_ffmpeg.get_ffmpeg_exe()
+    except ImportError:
+        print("⚙  ffmpeg not found on PATH — auto-installing imageio-ffmpeg...")
+        try:
+            res = subprocess.run([sys.executable, '-m', 'pip', 'install', 'imageio-ffmpeg', '-q'], capture_output=True, text=True)
+            if res.returncode == 0:
+                import imageio_ffmpeg
+                ffmpeg_exe = imageio_ffmpeg.get_ffmpeg_exe()
+                print("✔  imageio-ffmpeg installed successfully!")
+        except Exception as e:
+            print(f"⚠️  Could not auto-install imageio-ffmpeg: {e}")
+
+    if ffmpeg_exe and os.path.exists(ffmpeg_exe):
+        ffmpeg_dir = os.path.dirname(ffmpeg_exe)
+        if ffmpeg_dir not in os.environ.get("PATH", ""):
+            os.environ["PATH"] = ffmpeg_dir + os.pathsep + os.environ.get("PATH", "")
+        return ffmpeg_exe
+
+    return 'ffmpeg'
+
+
+FFMPEG_PATH = _ensure_ffmpeg()
+
+
 def sanitize_filename(name, max_len=60):
     """Remove/replace characters that are illegal in filenames."""
     name = re.sub(r'[\\/*?:"<>|]', '', name)
@@ -93,7 +126,7 @@ def embed_metadata(filepath, metadata):
             except Exception as e:
                 print(f"[Meta] Failed cover download: {e}")
 
-        cmd = ['ffmpeg', '-y', '-i', filepath]
+        cmd = [FFMPEG_PATH, '-y', '-i', filepath]
         ext_lower = ext.lower()
 
         if ext_lower == '.mp3':
@@ -339,6 +372,7 @@ def start_download():
                                       label=f'Converting to {ext_label.upper()}', n=n, total=total)
 
             ydl_opts = {
+                'ffmpeg_location': FFMPEG_PATH,
                 'outtmpl': os.path.join(temp_dir, '%(playlist_index)s - %(title)s.%(ext)s'
                                         if is_playlist else '%(title)s.%(ext)s'),
                 'cookiefile': 'cookies.txt', 
