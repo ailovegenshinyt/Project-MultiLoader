@@ -18,6 +18,30 @@ MultiLoader is a **high-performance, self-hosted downloader** for YouTube and Sp
 
 ---
 
+## ⚠️ IMPORTANT: Hosting Requirements
+
+**MultiLoader MUST run on:**
+- ✅ Your local machine
+- ✅ Your personal server with normal internet
+- ✅ VPS/Dedicated server (with residential IP preferred)
+
+**⛔ MultiLoader CANNOT run on:**
+- ❌ Google Colab
+- ❌ Hugging Face Spaces
+- ❌ Replit
+- ❌ Public cloud services (AWS Lambda, Google Cloud Functions, etc.)
+- ❌ Shared hosting platforms
+
+**WHY?** YouTube detects requests from public cloud services as bots and blocks them. You'll get errors like:
+```
+ERROR: [youtube] Access denied. The following error occurred while trying to access the URL:
+403 Forbidden
+```
+
+**SOLUTION:** Install locally or on your own server with a regular internet connection.
+
+---
+
 ## 🎯 Key Features
 
 | Feature | Description |
@@ -69,22 +93,30 @@ python app.py
 ### 3️⃣ Access the UI
 
 - **Local:** Open `http://localhost:8080` in your browser
-- **Public URL:** Use ngrok tunnel (optional)
+- **From other devices:** Use ngrok tunnel (see below)
 
 **That's it!** 🎉 Start downloading immediately.
 
 ---
 
-## 🌐 Public Mode (Optional)
+## 🌐 Access from Other Devices (ngrok)
 
-Want to access MultiLoader from anywhere? Use **ngrok**:
+Want to access MultiLoader from your phone or another computer?
 
-1. Get a free authtoken: [ngrok.com/sign-up](https://dashboard.ngrok.com/get-started/your-authtoken)
-2. Set in `.env`:
+1. Get a free ngrok account: [ngrok.com/sign-up](https://dashboard.ngrok.com/sign-up)
+2. Get your authtoken: [ngrok dashboard](https://dashboard.ngrok.com/get-started/your-authtoken)
+3. Create `.env` file in project folder:
    ```env
-   NGROK_AUTHTOKEN=your_token_here
+   NGROK_AUTHTOKEN=your_authtoken_here
    ```
-3. Run `python app.py` and select **Public Tunnel**
+4. Run:
+   ```bash
+   python app.py
+   ```
+5. Choose option **2** for ngrok tunnel
+6. Access the public URL from any device
+
+**Note:** This still runs on YOUR machine. ngrok just creates a secure tunnel to it.
 
 ---
 
@@ -142,6 +174,7 @@ Project-MultiLoader/
 - **FFmpeg** (Auto-installed, or install manually from [ffmpeg.org](https://ffmpeg.org/download.html))
 - **Internet connection** (for downloading)
 - **~500MB disk space** (for dependencies)
+- **Local machine or personal server** (see hosting warning above)
 
 ---
 
@@ -213,7 +246,7 @@ See LICENSE file for details
 
 ## 🔗 Quick Links
 
-- 📖 [Documentation](CONTRIBUTING.md)
+- 📖 [User Guide](USERS_GUIDE.md)
 - 🚀 [Roadmap](ROADMAP.md)
 - 🐛 [Report Issue](https://github.com/ailovegenshinyt/Project-MultiLoader/issues)
 - 💬 [Join Discussion](https://github.com/ailovegenshinyt/Project-MultiLoader/discussions)
