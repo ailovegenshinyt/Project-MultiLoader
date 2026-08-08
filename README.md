@@ -28,6 +28,27 @@ MultiLoader is a **real, universal, high-performance downloader** built with a *
 > 3. **Clear old environments:** If you upgraded Python, make sure you reinstall the packages using `py -m pip install -r requirements.txt`.
 
 ---
+## ⚠️ IMPORTANT: Hosting Requirements
+
+**MultiLoader MUST run on:**
+- ✅ Your local machine
+- ✅ Your personal server with normal internet
+- ✅ VPS/Dedicated server (with residential IP preferred)
+
+**⛔ MultiLoader CANNOT run on:**
+- ❌ Google Colab
+- ❌ Hugging Face Spaces
+- ❌ Replit
+- ❌ Public cloud services (AWS Lambda, Google Cloud Functions, etc.)
+- ❌ Shared hosting platforms
+
+**WHY?** YouTube detects requests from public cloud services as bots and blocks them.
+
+**SOLUTION:** Install locally or on your own server with a regular internet connection.
+
+---
+
+
 
 ## 🎯 Supported Platforms & Features
 
