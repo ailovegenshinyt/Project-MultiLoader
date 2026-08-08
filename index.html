@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MultiLoader - Premium Multi-Source Downloader</title>
-    <meta name="description" content="Download YouTube Videos, Playlists, and Spotify Music in High Quality.">
+    <title>MultiLoader - Universal Video & Music Downloader</title>
+    <meta name="description" content="Download videos and music from YouTube, Instagram, TikTok, X/Twitter, Facebook, Spotify, PornHub, Reddit, and 1000+ more sites. Free, self-hosted, no ads.">
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -18,13 +18,27 @@
     <main class="container">
         <header>
             <h1>MultiLoader</h1>
-            <p class="subtitle">Premium Video &amp; Music Downloader (4K &amp; Playlist Support)</p>
+            <p class="subtitle">Universal Video & Music Downloader — 1000+ Sites Supported</p>
         </header>
+
+        <!-- Supported Platforms Badges -->
+        <div class="platform-badges">
+            <span class="badge badge-youtube">🎬 YouTube</span>
+            <span class="badge badge-spotify">🎵 Spotify</span>
+            <span class="badge badge-instagram">📸 Instagram</span>
+            <span class="badge badge-tiktok">🎵 TikTok</span>
+            <span class="badge badge-x">🐦 X</span>
+            <span class="badge badge-facebook">📘 Facebook</span>
+            <span class="badge badge-reddit">🤖 Reddit</span>
+            <span class="badge badge-pornhub">🔞 PornHub</span>
+            <span class="badge badge-more">+1000 more</span>
+        </div>
 
         <!-- URL Input -->
         <section id="urlTab" class="tab-content">
             <div class="input-group">
-                <input type="text" id="urlInput" placeholder="Paste YouTube / Spotify URL here..." autocomplete="off">
+                <input type="text" id="urlInput" placeholder="Paste any URL — YouTube, Instagram, TikTok, X, Facebook & more..." autocomplete="off">
+                <div id="platformIndicator" class="platform-indicator" style="display:none;"></div>
             </div>
             <div class="options">
                 <div class="select-wrapper">

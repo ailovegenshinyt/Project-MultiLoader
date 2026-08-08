@@ -8,6 +8,61 @@ document.addEventListener('DOMContentLoaded', () => {
     const statusIcon   = document.getElementById('statusIcon');
     const statusText   = document.getElementById('statusText');
     const terminalBody = document.getElementById('terminalBody');
+    const platformIndicator = document.getElementById('platformIndicator');
+
+    // ── Platform Detection ──────────────────────────────────────────────
+    const PLATFORMS = [
+        { pattern: /youtube\.com|youtu\.be/i,          name: 'YouTube',      emoji: '🎬', color: '#FF0000' },
+        { pattern: /spotify\.com/i,                    name: 'Spotify',      emoji: '🎵', color: '#1DB954' },
+        { pattern: /instagram\.com|instagr\.am/i,      name: 'Instagram',    emoji: '📸', color: '#E4405F' },
+        { pattern: /tiktok\.com|vm\.tiktok\.com/i,     name: 'TikTok',       emoji: '🎵', color: '#000000' },
+        { pattern: /twitter\.com|x\.com|t\.co/i,       name: 'X (Twitter)',  emoji: '🐦', color: '#1DA1F2' },
+        { pattern: /facebook\.com|fb\.watch/i,         name: 'Facebook',     emoji: '📘', color: '#1877F2' },
+        { pattern: /reddit\.com|redd\.it/i,            name: 'Reddit',       emoji: '🤖', color: '#FF4500' },
+        { pattern: /pornhub\.com/i,                    name: 'PornHub',      emoji: '🔞', color: '#FFA31A' },
+        { pattern: /vimeo\.com/i,                      name: 'Vimeo',        emoji: '🎥', color: '#1AB7EA' },
+        { pattern: /soundcloud\.com/i,                 name: 'SoundCloud',   emoji: '🔊', color: '#FF5500' },
+        { pattern: /twitch\.tv/i,                      name: 'Twitch',       emoji: '🟣', color: '#9146FF' },
+        { pattern: /dailymotion\.com/i,                name: 'Dailymotion',  emoji: '📺', color: '#0066DC' },
+        { pattern: /bilibili\.com|b23\.tv/i,           name: 'Bilibili',     emoji: '📺', color: '#00A1D6' },
+        { pattern: /pinterest\.com/i,                  name: 'Pinterest',    emoji: '📌', color: '#BD081C' },
+        { pattern: /tumblr\.com/i,                     name: 'Tumblr',       emoji: '📝', color: '#36465D' },
+        { pattern: /snapchat\.com/i,                   name: 'Snapchat',     emoji: '👻', color: '#FFFC00' },
+        { pattern: /linkedin\.com/i,                   name: 'LinkedIn',     emoji: '💼', color: '#0A66C2' },
+        { pattern: /bandcamp\.com/i,                   name: 'Bandcamp',     emoji: '🎸', color: '#629AA9' },
+        { pattern: /mixcloud\.com/i,                   name: 'Mixcloud',     emoji: '🎧', color: '#5000FF' },
+        { pattern: /nicovideo\.jp|nico\.ms/i,          name: 'NicoNico',     emoji: '📺', color: '#252525' },
+    ];
+
+    function detectPlatform(url) {
+        for (const p of PLATFORMS) {
+            if (p.pattern.test(url)) return p;
+        }
+        if (url.startsWith('http://') || url.startsWith('https://')) {
+            return { name: 'Website', emoji: '🌐', color: '#8b5cf6' };
+        }
+        return null;
+    }
+
+    let platformDebounce = null;
+    urlInput.addEventListener('input', () => {
+        clearTimeout(platformDebounce);
+        platformDebounce = setTimeout(() => {
+            const url = urlInput.value.trim();
+            if (!url) {
+                platformIndicator.style.display = 'none';
+                return;
+            }
+            const p = detectPlatform(url);
+            if (p) {
+                platformIndicator.innerHTML = `<span class="platform-dot" style="background:${p.color}"></span> ${p.emoji} ${p.name}`;
+                platformIndicator.style.display = 'flex';
+                platformIndicator.style.borderColor = p.color + '40';
+            } else {
+                platformIndicator.style.display = 'none';
+            }
+        }, 300);
+    });
 
     // ── Helpers ──────────────────────────────────────────────────────────
     function setProgress(pct, animated = true) {
@@ -52,7 +107,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ── Validation ───────────────────────────────────────────────────────
     function isValidUrl(url) {
-        return url.includes('youtube.com') || url.includes('youtu.be') || url.includes('spotify.com');
+        // Accept any HTTP(S) URL — yt-dlp supports 1000+ sites
+        return url.startsWith('http://') || url.startsWith('https://');
     }
 
     // ── Download Flow ─────────────────────────────────────────────────────
@@ -191,7 +247,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Trigger download
             setTimeout(() => {
-                window.location.href = encodeURI(result.download_url);
+                window.location.href = '/files/' + encodeURIComponent(result.filename);
                 downloadBtn.disabled    = false;
                 downloadBtn.textContent = 'Start New Download';
             }, 800);
@@ -215,8 +271,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // ── Event listeners ──────────────────────────────────────────────────
     downloadBtn.addEventListener('click', () => {
         const url = urlInput.value.trim();
-        if (!url)           { alert('Please paste a link first!'); return; }
-        if (!isValidUrl(url)) { alert('Invalid link! We support YouTube and Spotify.'); return; }
+        if (!url) { alert('Please paste a link first!'); return; }
+        if (!isValidUrl(url)) { alert('Please enter a valid URL starting with http:// or https://'); return; }
         startDownload(url);
     });
 

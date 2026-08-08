@@ -1,217 +1,148 @@
-# 📖 MultiLoader User Guide
+# 📖 MultiLoader User Guide — The Real Universal Downloader 😎
 
-Complete guide to downloading videos & music with MultiLoader.
+Welcome to the official **MultiLoader User Guide**! MultiLoader is equipped with the full power of `yt-dlp`, allowing you to download video and audio from over **1000+ websites** seamlessly.
 
 ---
 
-## 🎯 Table of Contents
+## 🎯 Quick Troubleshooting Checklist ⚠️
+
+> [!IMPORTANT]
+> **If a download fails or throws an error:**
+> 1. **Update Python:** MultiLoader performs best on **Python 3.10 or Python 3.14**. If you have an older version of Python installed on your computer (e.g. 3.8/3.9), **please upgrade or reinstall Python**!
+> 2. **Update yt-dlp:** Websites update their anti-bot protections almost daily. Always keep `yt-dlp` on the latest version by running:
+>    ```bash
+>    pip install -U yt-dlp -r requirements.txt
+>    ```
+> 3. **Re-install Requirements:** If you switched or upgraded Python versions, remember to reinstall requirements using `py -m pip install -U -r requirements.txt`.
+
+---
+
+## 🚀 Table of Contents
 
 1. [Getting Started](#getting-started)
 2. [YouTube Downloads](#youtube-downloads)
 3. [Spotify Downloads](#spotify-downloads)
-4. [Format & Quality Options](#format--quality-options)
-5. [Troubleshooting](#troubleshooting)
-6. [Tips & Tricks](#tips--tricks)
+4. [Instagram Downloads](#instagram-downloads)
+5. [TikTok Downloads](#tiktok-downloads)
+6. [X (Twitter) & Facebook Downloads](#x-twitter--facebook-downloads)
+7. [Reddit & Adult Sites (PornHub, etc.)](#reddit--adult-sites)
+8. [1000+ Other Supported Sites](#1000-other-supported-sites)
+9. [Ngrok Remote Access Setup](#ngrok-remote-access-setup)
+10. [Cookies & Authentication Guide](#cookies--authentication-guide)
+11. [Troubleshooting & FAQs](#troubleshooting--faqs)
 
 ---
 
 ## 🚀 Getting Started
 
-### Installation
-
+### 1. Installation
+Clone the repository and install dependencies:
 ```bash
 git clone https://github.com/ailovegenshinyt/Project-MultiLoader.git
 cd Project-MultiLoader
-pip install -r requirements.txt
-python app.py
+pip install -U yt-dlp -r requirements.txt
 ```
 
-### First Run
+### 2. Launching the App
+Run the backend with:
+```bash
+python app.py
+# Or if using Windows Launcher:
+py app.py
+```
 
-1. Open **http://localhost:8080** in your browser
-2. You'll see the beautiful Liquid Glass UI
-3. Paste a YouTube or Spotify URL
-4. Select format & quality
-5. Click Download & watch the magic happen ✨
+### 3. Choose Access Mode
+- **Mode [1] Local:** Open `http://localhost:8080` in your web browser.
+- **Mode [2] Ngrok:** Public HTTPS URL generated for accessing from mobile phones or external networks.
 
 ---
 
 ## 🎬 YouTube Downloads
 
-### Single Videos
-
-1. Copy a YouTube video URL: `https://www.youtube.com/watch?v=dQw4w9WgXcQ`
-2. Paste into MultiLoader
-3. Choose:
-   - **Format:** MP4 (video) or MP3 (audio)
-   - **Quality:** 4K, 1080p, 720p, 480p, 360p
-4. Click Download
-5. File appears in your browser automatically 🎉
-
-### Playlists
-
-1. Copy playlist URL: `https://www.youtube.com/playlist?list=PLxxxxxx`
-2. Paste into MultiLoader
-3. All videos in the playlist will be downloaded
-4. **Audio playlists** → Downloaded as ZIP file
-5. **Video playlists** → Each video separate (or ZIP)
-
-### Best Quality
-
-- **4K (2160p):** Best visuals, ~500MB per video
-- **1080p:** Great balance, ~300MB per video
-- **720p:** Recommended for most users, ~150MB per video
-- **480p:** Mobile-friendly, ~80MB per video
+- **Single Videos / Shorts:** Paste any YouTube video or Shorts link (e.g., `https://www.youtube.com/watch?v=...` or `https://youtube.com/shorts/...`). Choose MP4 (up to 4K) or MP3/WAV.
+- **Playlists:** Paste a playlist link. MultiLoader will download every track, embed metadata, and pack everything automatically into a downloadable `.zip` file.
 
 ---
 
 ## 🎵 Spotify Downloads
 
-### Single Tracks
-
-1. Find track on Spotify: Open in app or copy link
-2. Copy URL: `https://open.spotify.com/track/xxxxxxx`
-3. Paste into MultiLoader
-4. Choose format: **MP3** or **WAV**
-5. Download
-6. File includes: **Title, Artist, Album, Cover Art** ✨
-
-### Albums
-
-1. Copy album link: `https://open.spotify.com/album/xxxxxxx`
-2. Paste into MultiLoader
-3. All tracks download as a single ZIP
-4. Each track has full metadata embedded
-
-### Playlists
-
-1. Copy playlist: `https://open.spotify.com/playlist/xxxxxxx`
-2. Download as ZIP with all tracks
-3. Perfect for backup or offline listening
-
-**How it works:** Spotify tracks are found on YouTube, downloaded, and metadata is embedded automatically.
+- **Tracks, Albums & Playlists:** Paste any Spotify link (`https://open.spotify.com/track/...`, `playlist/...`, or `album/...`).
+- **How it works:** MultiLoader resolves the track titles, finds the best quality matching stream via `yt-dlp`, downloads it, embeds the album cover art, title, artist name, and ID3 tags, and delivers an MP3 or lossless WAV (or a `.zip` for albums/playlists).
 
 ---
 
-## 🎚️ Format & Quality Options
+## 📸 Instagram Downloads
 
-### Video Formats
-
-| Quality | Size | Best For | Example |
-|---------|------|----------|----------|
-| **4K (2160p)** | 500MB+ | Archival, high-end displays | 4K monitors, TVs |
-| **1080p** | 300MB | General purpose | Most laptops |
-| **720p** | 150MB | Good balance | Tablets, older laptops |
-| **480p** | 80MB | Mobile, streaming | Phones, slow internet |
-| **360p** | 40MB | Emergency only | Ultra-slow internet |
-
-### Audio Formats
-
-| Format | Bitrate | Quality | File Size (3 min song) |
-|--------|---------|---------|------------------------|
-| **MP3** | 320 kbps | High quality | ~7.5 MB |
-| **MP3** | 256 kbps | Good quality | ~6 MB |
-| **MP3** | 192 kbps | Standard | ~4.5 MB |
-| **MP3** | 128 kbps | Basic | ~3 MB |
-| **WAV** | Lossless | Perfect quality | ~30 MB |
-
-**Recommendation:** 
-- YouTube music → 256 kbps MP3
-- Spotify tracks → 320 kbps MP3
-- Archiving → WAV
+- **Reels & Posts:** Copy and paste Instagram Post/Reel links directly into MultiLoader.
+- **Stories / Private Profiles:** For private accounts or stories, export your browser cookies into `.env` under `INSTAGRAM_COOKIES=./cookies/instagram_cookies.txt` or log in on Chrome/Edge on the host PC for auto-cookie extraction.
 
 ---
 
-## 🔧 Troubleshooting
+## 🎵 TikTok Downloads
 
-### "Download not starting"
-- Check internet connection
-- Verify URL is correct
-- Try a different video/track
-- Refresh the page
-
-### "Video not found"
-- URL may be private or region-locked
-- Try a different video
-- Check if video still exists on YouTube
-
-### "Audio quality poor"
-- Choose higher bitrate (256+ kbps)
-- Spotify audio quality depends on YouTube version found
-- Try different source if available
-
-### "Large file sizes"
-- For video: Choose lower quality (720p instead of 1080p)
-- For audio: Use 192 kbps MP3 instead of 320 kbps
-- Store on external drive if low on space
-
-### "Slow downloads"
-- Check internet speed
-- Try during off-peak hours
-- Close other bandwidth-heavy apps
-
-### "Permission errors"
-- Make sure you have write permissions to downloads folder
-- Try running from a different directory
+- **Videos & Slideshows:** Paste any TikTok video URL or short share link (`vm.tiktok.com`).
+- **Automatic Browser Cookies:** MultiLoader automatically detects logged-in Chrome or Edge sessions to bypass TikTok rehydration / bot checks natively.
 
 ---
 
-## 💡 Tips & Tricks
+## 🐦 X (Twitter) & Facebook Downloads
 
-### Pro Tips
-
-✅ **Batch Downloads:** Paste multiple URLs and download sequentially
-✅ **Playlist Organization:** Downloaded playlists auto-organize by artist
-✅ **Metadata Accuracy:** Album art & info auto-embed for audio files
-✅ **Storage:** Downloads auto-cleanup after 5 minutes (configurable)
-✅ **Offline Access:** Use ngrok to share download link publicly
-
-### Keyboard Shortcuts
-
-- `Ctrl+V` → Paste URL
-- `Enter` → Start download (when URL pasted)
-- `Esc` → Cancel download
-
-### Storage Management
-
-```
-Default download folder: ./downloads/
-Max folder size: No limit (you control cleanup)
-Auto-cleanup: Every 5 minutes
-Retention: Configure in app.py
-```
-
-### Performance Tips
-
-1. **Limit concurrent downloads** → Download one at a time
-2. **Off-peak hours** → Faster downloads at night
-3. **Wired connection** → More stable than WiFi
-4. **Close browser tabs** → Reduces resource usage
+- **X / Twitter:** Supports tweet videos, GIFs, and media links.
+- **Facebook:** Supports public posts, watch videos, and reels. For private groups/videos, configure `FACEBOOK_COOKIES` in your `.env`.
 
 ---
 
-## ⚠️ Legal & Ethical Use
+## 🤖 Reddit & Adult Sites (PornHub, etc.)
 
-✅ **OK to download:**
-- Videos you own or created
-- Content with explicit permission
-- Personal backup of your content
-- Educational/research purposes
-
-❌ **Not OK to download:**
-- Copyrighted content without permission
-- Commercial redistribution
-- Circumventing DRM protections (in some countries)
-
-**Always respect creators' rights and your local laws.**
+- **Reddit:** Downloads `v.redd.it` videos and automatically merges video and audio streams seamlessly using FFmpeg.
+- **PornHub & 18+ Platforms:** Fully supported! Select video format and resolution (1080p, 720p, etc.). For premium-only videos, provide cookies in `.env`.
 
 ---
 
-## 📞 Need Help?
+## 🌐 1000+ Other Supported Sites
 
-- 🐛 [Report Issues](https://github.com/ailovegenshinyt/Project-MultiLoader/issues)
-- 📖 [Read Docs](https://github.com/ailovegenshinyt/Project-MultiLoader#readme)
+MultiLoader inherits the universal extractor engine of `yt-dlp`. You can download from:
+- **Vimeo**, **Dailymotion**, **Bilibili**, **Twitch Clips/VODs**
+- **SoundCloud**, **Bandcamp**, **Mixcloud**
+- **NicoNico**, **Streamable**, **Loom**, and 1000+ more!
+
+*If it plays video or audio on the web, MultiLoader can download it!*
 
 ---
 
-**Happy downloading!** 🎉
+## 🌐 Ngrok Remote Access Setup
+
+To download videos on your phone using MultiLoader running on your PC:
+1. Sign up for free at [ngrok.com](https://ngrok.com).
+2. Copy your Auth Token from your Ngrok dashboard.
+3. Put `NGROK_AUTHTOKEN=your_token_here` in `.env` OR type it when prompted by `py app.py`.
+4. Select Mode `[2]` when launching. Share the `https://xxxx.ngrok-free.dev` link to any phone!
+
+---
+
+## 🍪 Cookies & Authentication Guide
+
+If a site requires login (like private IG accounts or age-gated videos):
+1. Install a browser extension like **Get cookies.txt LOCALLY** (Chrome/Firefox).
+2. Export your cookies for the target site as a `.txt` file into the `cookies/` folder.
+3. In `.env`, set the path to your cookie file:
+   ```env
+   INSTAGRAM_COOKIES=./cookies/instagram_cookies.txt
+   TIKTOK_COOKIES=./cookies/tiktok_cookies.txt
+   ```
+
+---
+
+## 🔧 Troubleshooting & FAQs
+
+### ❓ Issue: "Download failed or unable to extract rehydration/data"
+- **Solution 1:** Update Python! Make sure you are using Python 3.10+ (or 3.14). Older versions like Python 3.8 have broken SSL/subprocesses.
+- **Solution 2:** Update `yt-dlp`: Run `pip install -U yt-dlp`.
+- **Solution 3:** Reinstall requirements: Run `py -m pip install -U -r requirements.txt`.
+
+### ❓ Issue: "File not found" when download finishes
+- Hard refresh your web browser (`Ctrl + F5` or `Shift + F5`) to clear the cached JavaScript file!
+
+---
+
+**Enjoy the REAL MultiLoader experience! 😎**

@@ -1,5 +1,11 @@
+# -*- coding: utf-8 -*-
 import os, time, shutil, threading, uuid, re, json, traceback
 import subprocess, random, requests
+import sys, locale
+
+# Windows Unicode Fix for subprocesses (prevents ffmpeg/yt-dlp charmap errors)
+if os.name == 'nt':
+    locale.getpreferredencoding = lambda do_setlocale=True: "utf-8"
 import yt_dlp
 from flask import Flask, request, jsonify, send_file, Response
 
@@ -24,6 +30,106 @@ if os.path.exists(DOWNLOAD_FOLDER):
 os.makedirs(DOWNLOAD_FOLDER, exist_ok=True)
 
 tasks = {}
+
+
+# ── Platform Detection ─────────────────────────────────────────────────────
+PLATFORM_PATTERNS = [
+    # (regex, key, display_name, emoji)
+    (r'(youtube\.com|youtu\.be)',           'youtube',    'YouTube',      '🎬'),
+    (r'spotify\.com',                       'spotify',    'Spotify',      '🎵'),
+    (r'(instagram\.com|instagr\.am)',       'instagram',  'Instagram',    '📸'),
+    (r'(tiktok\.com|vm\.tiktok\.com)',      'tiktok',     'TikTok',       '🎵'),
+    (r'(twitter\.com|x\.com|t\.co)',        'x',          'X (Twitter)',  '🐦'),
+    (r'facebook\.com|fb\.watch',            'facebook',   'Facebook',     '📘'),
+    (r'(reddit\.com|redd\.it)',             'reddit',     'Reddit',       '🤖'),
+    (r'(pornhub\.com)',                     'pornhub',    'PornHub',      '🔞'),
+    (r'vimeo\.com',                         'vimeo',      'Vimeo',        '🎥'),
+    (r'soundcloud\.com',                    'soundcloud', 'SoundCloud',   '🔊'),
+    (r'(twitch\.tv)',                        'twitch',     'Twitch',       '🟣'),
+    (r'dailymotion\.com',                   'dailymotion','Dailymotion',  '📺'),
+    (r'(bilibili\.com|b23\.tv)',            'bilibili',   'Bilibili',     '📺'),
+    (r'pinterest\.com',                     'pinterest',  'Pinterest',    '📌'),
+    (r'tumblr\.com',                        'tumblr',     'Tumblr',       '📝'),
+    (r'(snapchat\.com|story\.snapchat)',    'snapchat',   'Snapchat',     '👻'),
+    (r'linkedin\.com',                      'linkedin',   'LinkedIn',     '💼'),
+    (r'(xvideos\.com)',                     'xvideos',    'XVideos',      '🔞'),
+    (r'(xnxx\.com)',                        'xnxx',       'XNXX',         '🔞'),
+    (r'(bandcamp\.com)',                    'bandcamp',   'Bandcamp',     '🎸'),
+    (r'(mixcloud\.com)',                    'mixcloud',   'Mixcloud',     '🎧'),
+    (r'(nicovideo\.jp|nico\.ms)',           'niconico',   'NicoNico',     '📺'),
+]
+
+# Platforms that benefit from cookies for logged-in / age-gated content
+PLATFORM_COOKIE_ENV = {
+    'instagram':  'INSTAGRAM_COOKIES',
+    'tiktok':     'TIKTOK_COOKIES',
+    'x':          'X_COOKIES',
+    'facebook':   'FACEBOOK_COOKIES',
+    'reddit':     'REDDIT_COOKIES',
+    'pornhub':    'PORNHUB_COOKIES',
+    'twitch':     'TWITCH_COOKIES',
+    'bilibili':   'BILIBILI_COOKIES',
+    'snapchat':   'SNAPCHAT_COOKIES',
+    'pinterest':  'PINTEREST_COOKIES',
+    'linkedin':   'LINKEDIN_COOKIES',
+}
+
+
+def detect_platform(url):
+    """Detect platform from URL. Returns dict with key, name, emoji, or generic fallback."""
+    url_lower = url.lower()
+    for pattern, key, name, emoji in PLATFORM_PATTERNS:
+        if re.search(pattern, url_lower):
+            return {'key': key, 'name': name, 'emoji': emoji}
+    return {'key': 'generic', 'name': 'Website', 'emoji': '🌐'}
+
+
+def get_platform_cookies(platform_key):
+    """Get cookie file path for a platform from env var, if configured."""
+    env_var = PLATFORM_COOKIE_ENV.get(platform_key)
+    if env_var:
+        cookie_path = os.environ.get(env_var, '').strip()
+        if cookie_path and os.path.exists(cookie_path):
+            return cookie_path
+    return None
+
+
+def get_browser_for_cookies():
+    """Auto-detect an installed browser for cookie extraction on Windows/Mac/Linux.
+    Returns the browser name string for yt-dlp's cookiesfrombrowser, or None."""
+    local_app = os.environ.get('LOCALAPPDATA', '')
+    app_data  = os.environ.get('APPDATA', '')
+    home      = os.path.expanduser('~')
+
+    candidates = [
+        # (yt-dlp browser name, Windows path, Linux path, macOS path)
+        ('chrome',
+         os.path.join(local_app, 'Google', 'Chrome', 'User Data'),
+         os.path.join(home, '.config', 'google-chrome'),
+         os.path.join(home, 'Library', 'Application Support', 'Google', 'Chrome')),
+        ('edge',
+         os.path.join(local_app, 'Microsoft', 'Edge', 'User Data'),
+         os.path.join(home, '.config', 'microsoft-edge'),
+         os.path.join(home, 'Library', 'Application Support', 'Microsoft Edge')),
+        ('brave',
+         os.path.join(local_app, 'BraveSoftware', 'Brave-Browser', 'User Data'),
+         os.path.join(home, '.config', 'BraveSoftware', 'Brave-Browser'),
+         os.path.join(home, 'Library', 'Application Support', 'BraveSoftware', 'Brave-Browser')),
+        ('firefox',
+         os.path.join(app_data, 'Mozilla', 'Firefox', 'Profiles'),
+         os.path.join(home, '.mozilla', 'firefox'),
+         os.path.join(home, 'Library', 'Application Support', 'Firefox', 'Profiles')),
+        ('opera',
+         os.path.join(app_data, 'Opera Software', 'Opera Stable'),
+         os.path.join(home, '.config', 'opera'),
+         os.path.join(home, 'Library', 'Application Support', 'com.operasoftware.Opera')),
+    ]
+
+    for name, win_path, lin_path, mac_path in candidates:
+        for path in (win_path, lin_path, mac_path):
+            if path and os.path.exists(path):
+                return name
+    return None
 
 
 def _ensure_ffmpeg():
@@ -96,6 +202,28 @@ def get_youtube_metadata(url):
             }
     except:
         pass
+    return None
+
+
+def get_generic_metadata(url, ydl_opts_base):
+    """Extract metadata from any yt-dlp supported site using extract_info."""
+    try:
+        extract_opts = {**ydl_opts_base, 'quiet': True, 'no_warnings': True, 'skip_download': True}
+        # Remove hooks that don't apply to info extraction
+        extract_opts.pop('progress_hooks', None)
+        extract_opts.pop('postprocessor_hooks', None)
+        extract_opts.pop('postprocessors', None)
+        with yt_dlp.YoutubeDL(extract_opts) as ydl:
+            info = ydl.extract_info(url, download=False)
+            if info:
+                return {
+                    'title': info.get('title'),
+                    'artist': info.get('uploader') or info.get('creator') or info.get('channel'),
+                    'album': info.get('album') or info.get('extractor_key', 'Unknown'),
+                    'cover_url': info.get('thumbnail')
+                }
+    except Exception as e:
+        print(f"[Meta] Generic metadata extraction failed: {e}")
     return None
 
 
@@ -219,6 +347,16 @@ def index():
     return send_file('index.html')
 
 
+@app.route('/detect-platform', methods=['POST'])
+def detect_platform_route():
+    """API endpoint for frontend to detect platform from URL."""
+    data = request.json
+    url = data.get('url', '')
+    if not url:
+        return jsonify({'key': 'generic', 'name': 'Unknown', 'emoji': '🌐'})
+    platform = detect_platform(url)
+    return jsonify(platform)
+
 
 @app.route('/download', methods=['POST'])
 def start_download():
@@ -248,8 +386,16 @@ def start_download():
         task = tasks[task_id]
 
         try:
+            # ── Detect platform ──────────────────────────────────────────
+            platform = detect_platform(url)
+            platform_key = platform['key']
+            platform_name = platform['name']
+            platform_emoji = platform['emoji']
+
+            emit_log(task, f"{platform_emoji} Platform detected: {platform_name}")
+
             # ── Spotify Identity Resolver ──────────────────────────────────
-            if 'spotify.com' in url:
+            if platform_key == 'spotify':
                 emit_log(task, "🔍 Resolving Spotify track identity...")
                 search_query = ""
                 try:
@@ -309,17 +455,17 @@ def start_download():
                 url = f"ytsearch1:{search_query}"
                 emit_log(task, f"🔀 Redirecting to YouTube: {search_query}")
 
-            elif 'youtube.com' in url or 'youtu.be' in url:
+            elif platform_key == 'youtube':
                 yt_meta = get_youtube_metadata(url)
                 if yt_meta:
                     task['metadata'] = yt_meta
 
             # ── Detect playlist vs single ─────────────────────────────────
-            is_playlist = ('list=' in url or '/playlist' in url) and 'spotify.com' not in url
+            is_playlist = ('list=' in url or '/playlist' in url) and platform_key != 'spotify'
 
             # ── Build yt-dlp options ──────────────────────────────────────
             abs_download_path = os.path.abspath(DOWNLOAD_FOLDER)
-            temp_dir_name = f"yt_{int(time.time())}_{uuid.uuid4().hex[:6]}"
+            temp_dir_name = f"dl_{int(time.time())}_{uuid.uuid4().hex[:6]}"
             temp_dir = os.path.join(abs_download_path, temp_dir_name)
             os.makedirs(temp_dir, exist_ok=True)
 
@@ -371,11 +517,16 @@ def start_download():
                         emit_progress(task, 'postprocess', stage='ExtractAudio',
                                       label=f'Converting to {ext_label.upper()}', n=n, total=total)
 
+            # ── Determine cookie file ─────────────────────────────────────
+            # Priority: platform-specific cookie → global cookies.txt
+            cookie_file = get_platform_cookies(platform_key)
+            if not cookie_file and os.path.exists('cookies.txt'):
+                cookie_file = 'cookies.txt'
+
             ydl_opts = {
                 'ffmpeg_location': FFMPEG_PATH,
                 'outtmpl': os.path.join(temp_dir, '%(playlist_index)s - %(title)s.%(ext)s'
                                         if is_playlist else '%(title)s.%(ext)s'),
-                'cookiefile': 'cookies.txt', 
                 'quiet': True, 'no_warnings': True,
                 'user_agent': random.choice([
                     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
@@ -391,13 +542,28 @@ def start_download():
                 'retries': 5,
                 'fragment_retries': 5,
                 'socket_timeout': 20,
-                'extractor_args': {
+            }
+
+            # Add cookie file if available
+            if cookie_file:
+                ydl_opts['cookiefile'] = cookie_file
+                emit_log(task, f"🍪 Using cookies: {os.path.basename(cookie_file)}")
+
+            # Platform-specific tweaks — keep it simple, let yt-dlp do its job.
+            # Only add platform args when strictly needed.
+            if platform_key == 'youtube' or 'ytsearch' in url:
+                ydl_opts['extractor_args'] = {
                     'youtube': {
                         'player_client': ['tv_embedded', 'ios', 'android', 'web'],
                     }
-                },
-                'youtube_include_dash_manifest': True,
-            }
+                }
+                ydl_opts['youtube_include_dash_manifest'] = True
+
+            # For all other platforms: yt-dlp handles them natively.
+            # If the user has a cookie file set in .env, it's already applied above.
+            # cookiesfrombrowser is NOT used automatically because Chrome locks its
+            # database while running, causing a PermissionError crash.
+
 
             if fmt == 'video':
                 res = {'4k': '2160', '1080p': '1080', '720p': '720', '480p': '480'}.get(quality, '1080')
@@ -416,7 +582,7 @@ def start_download():
                 ]
 
             # Pre-extract info to get playlist total count
-            emit_log(task, "🔌 Connecting to source...")
+            emit_log(task, f"🔌 Connecting to {platform_name}...")
             emit_progress(task, 'connecting')
 
             try:
@@ -426,6 +592,16 @@ def start_download():
                     playlist_state['total'] = len(entries) if entries else 1
                     playlist_state['current'] = 0
                     playlist_title = flat_info.get('title', 'Playlist') if flat_info else 'Playlist'
+
+                    # For non-YouTube/Spotify, grab metadata from flat info
+                    if platform_key not in ('youtube', 'spotify') and not task.get('metadata'):
+                        if flat_info:
+                            task['metadata'] = {
+                                'title': flat_info.get('title'),
+                                'artist': flat_info.get('uploader') or flat_info.get('creator') or flat_info.get('channel'),
+                                'album': flat_info.get('album') or platform_name,
+                                'cover_url': flat_info.get('thumbnail')
+                            }
             except Exception:
                 playlist_state['total'] = 1
                 playlist_title = 'Playlist'
@@ -434,7 +610,7 @@ def start_download():
             if total > 1:
                 emit_log(task, f"📋 Playlist: {playlist_title} ({total} tracks)")
             else:
-                emit_log(task, f"🎯 Starting download...")
+                emit_log(task, f"🎯 Starting download from {platform_name}...")
 
             # ── Actual download ───────────────────────────────────────────
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -610,11 +786,12 @@ def print_banner():
     print()
     tag_line = (
         f"  {_GY}◈{_R}  "
-        f"{_c(_CY,'Premium Video & Music Downloader')}  "
+        f"{_c(_CY,'Universal Video & Music Downloader')}  "
         f"{_GY}|{_R}  "
-        f"{_c(_MG,'YouTube')} {_GY}•{_R} {_c(_GN,'Spotify')}  "
-        f"{_GY}|{_R}  "
-        f"{_c(_YL,'4K & Playlist Support')}"
+        f"{_c(_MG,'YouTube')} {_GY}•{_R} {_c(_GN,'Spotify')} {_GY}•{_R} "
+        f"{_c(_YL,'Instagram')} {_GY}•{_R} {_c(_BL,'TikTok')} {_GY}•{_R} "
+        f"{_c(_CY,'X')} {_GY}•{_R} {_c(_BL,'Facebook')} {_GY}•{_R} "
+        f"{_c(_RD,'1000+ Sites')}"
         f"  {_GY}◈{_R}"
     )
     print(tag_line)
@@ -695,6 +872,14 @@ if __name__ == '__main__':
                 authtoken = os.environ.get("NGROK_AUTHTOKEN", "").strip()
                 if authtoken.upper() in ["YOUR_NGROK_AUTHTOKEN", "YOUR_AUTHTOKEN", ""]:
                     authtoken = ""
+                    if "NGROK_AUTHTOKEN" in os.environ:
+                        del os.environ["NGROK_AUTHTOKEN"]
+                    
+                    # CRITICAL: pyngrok caches the env var immediately upon import.
+                    # We must explicitly wipe its cached memory so it doesn't pass the dummy string.
+                    from pyngrok import conf
+                    if conf.get_default().auth_token and conf.get_default().auth_token.upper() == "YOUR_NGROK_AUTHTOKEN":
+                        conf.get_default().auth_token = None
 
                 if not authtoken:
                     print(f"\n  {_CY}🔑  Ngrok Authtoken setup (for unique dynamic URLs):{_R}")
@@ -707,6 +892,7 @@ if __name__ == '__main__':
 
                 if authtoken:
                     print(f"\n  {_CY}⚙  Authenticating with ngrok...{_R}")
+                    os.environ["NGROK_AUTHTOKEN"] = authtoken
                     ngrok.set_auth_token(authtoken)
 
                 print(f"  {_CY}🔌  Opening unique tunnel on port {PORT}...{_R}")

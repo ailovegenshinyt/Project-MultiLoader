@@ -96,8 +96,92 @@ h1 {
 
 p.subtitle {
     color: var(--text-dim);
-    margin-bottom: 2.5rem;
+    margin-bottom: 1.2rem;
     font-weight: 300;
+}
+
+/* ── Platform Badges ───────────────────────────────────────────────────── */
+.platform-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 1.8rem;
+    justify-content: center;
+}
+
+.badge {
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 0.25rem 0.55rem;
+    border-radius: 20px;
+    border: 1px solid var(--glass-border);
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--text-main);
+    white-space: nowrap;
+    transition: all 0.25s ease;
+    cursor: default;
+    letter-spacing: 0.02em;
+}
+
+.badge:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.badge-youtube    { border-color: rgba(255, 0, 0, 0.3); }
+.badge-youtube:hover { background: rgba(255, 0, 0, 0.15); }
+
+.badge-spotify    { border-color: rgba(29, 185, 84, 0.3); }
+.badge-spotify:hover { background: rgba(29, 185, 84, 0.15); }
+
+.badge-instagram  { border-color: rgba(228, 64, 95, 0.3); }
+.badge-instagram:hover { background: rgba(228, 64, 95, 0.15); }
+
+.badge-tiktok     { border-color: rgba(255, 0, 80, 0.3); }
+.badge-tiktok:hover { background: rgba(255, 0, 80, 0.15); }
+
+.badge-x          { border-color: rgba(29, 161, 242, 0.3); }
+.badge-x:hover { background: rgba(29, 161, 242, 0.15); }
+
+.badge-facebook   { border-color: rgba(24, 119, 242, 0.3); }
+.badge-facebook:hover { background: rgba(24, 119, 242, 0.15); }
+
+.badge-reddit     { border-color: rgba(255, 69, 0, 0.3); }
+.badge-reddit:hover { background: rgba(255, 69, 0, 0.15); }
+
+.badge-pornhub    { border-color: rgba(255, 163, 26, 0.3); }
+.badge-pornhub:hover { background: rgba(255, 163, 26, 0.15); }
+
+.badge-more {
+    border-color: rgba(139, 92, 246, 0.3);
+    background: rgba(139, 92, 246, 0.1);
+    color: var(--primary);
+    font-weight: 800;
+}
+.badge-more:hover { background: rgba(139, 92, 246, 0.2); }
+
+/* ── Platform Indicator (live detection) ──────────────────────────────── */
+.platform-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 0.5rem;
+    padding: 0.4rem 0.8rem;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--glass-border);
+    border-radius: 10px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-main);
+    animation: fadeIn 0.25s ease;
+}
+
+.platform-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    box-shadow: 0 0 6px currentColor;
 }
 
 /* Input Styles */
@@ -478,5 +562,14 @@ button:active {
         flex-direction: column;
         align-items: center;
         gap: 0.5rem;
+    }
+
+    .platform-badges {
+        gap: 0.3rem;
+    }
+
+    .badge {
+        font-size: 0.58rem;
+        padding: 0.2rem 0.4rem;
     }
 }
