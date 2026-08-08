@@ -69,8 +69,8 @@ MultiLoader is a **real, universal, high-performance downloader** built with a *
 git clone https://github.com/ailovegenshinyt/Project-MultiLoader.git
 cd Project-MultiLoader
 
-# Install requirements (Make sure to update yt-dlp to latest!)
-pip install -U yt-dlp -r requirements.txt
+# Install requirements
+pip install -r requirements.txt
 ```
 
 ### 3️⃣ Run MultiLoader
