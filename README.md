@@ -23,7 +23,7 @@ MultiLoader is a **real, universal, high-performance downloader** built with a *
 > 1. **Update Python:** Ensure you are on **Python 3.10+** (Python 3.14 recommended). If your machine has an older Python version (like 3.8/3.9), **please update or reinstall Python**!
 > 2. **Update yt-dlp & Requirements:** Platforms constantly update their anti-bot algorithms. Always run:
 >    ```bash
->    pip install -U yt-dlp -r requirements.txt
+>    pip install -r requirements.txt
 >    ```
 > 3. **Clear old environments:** If you upgraded Python, make sure you reinstall the packages using `py -m pip install -r requirements.txt`.
 
