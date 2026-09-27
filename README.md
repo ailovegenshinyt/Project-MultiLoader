@@ -23,32 +23,11 @@ MultiLoader is a **real, universal, high-performance downloader** built with a *
 > 1. **Update Python:** Ensure you are on **Python 3.10+** (Python 3.14 recommended). If your machine has an older Python version (like 3.8/3.9), **please update or reinstall Python**!
 > 2. **Update yt-dlp & Requirements:** Platforms constantly update their anti-bot algorithms. Always run:
 >    ```bash
->    pip install -r requirements.txt
+>    pip install -U yt-dlp -r requirements.txt
 >    ```
 > 3. **Clear old environments:** If you upgraded Python, make sure you reinstall the packages using `py -m pip install -r requirements.txt`.
 
 ---
-## ⚠️ IMPORTANT: Hosting Requirements
-
-**MultiLoader MUST run on:**
-- ✅ Your local machine
-- ✅ Your personal server with normal internet
-- ✅ VPS/Dedicated server (with residential IP preferred)
-
-**⛔ MultiLoader CANNOT run on:**
-- ❌ Google Colab
-- ❌ Hugging Face Spaces
-- ❌ Replit
-- ❌ Public cloud services (AWS Lambda, Google Cloud Functions, etc.)
-- ❌ Shared hosting platforms
-
-**WHY?** YouTube detects requests from public cloud services as bots and blocks them.
-
-**SOLUTION:** Install locally or on your own server with a regular internet connection.
-
----
-
-
 
 ## 🎯 Supported Platforms & Features
 
@@ -90,8 +69,8 @@ MultiLoader is a **real, universal, high-performance downloader** built with a *
 git clone https://github.com/ailovegenshinyt/Project-MultiLoader.git
 cd Project-MultiLoader
 
-# Install requirements
-pip install -r requirements.txt
+# Install requirements (Make sure to update yt-dlp to latest!)
+pip install -U yt-dlp -r requirements.txt
 ```
 
 ### 3️⃣ Run MultiLoader

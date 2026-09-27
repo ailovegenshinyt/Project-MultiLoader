@@ -800,6 +800,69 @@ def print_banner():
     print()
 
 
+def check_for_updates():
+    """Check GitHub for new commits and offer to update via git pull."""
+    try:
+        # Resolve the local git HEAD commit hash
+        result = subprocess.run(
+            ['git', 'rev-parse', 'HEAD'],
+            capture_output=True, text=True, cwd=os.path.dirname(os.path.abspath(__file__))
+        )
+        if result.returncode != 0:
+            return  # Not a git repo — silently skip
+        local_commit = result.stdout.strip()
+
+        # Fetch latest remote commit from GitHub API (no auth required for public repos)
+        api_url = 'https://api.github.com/repos/ailovegenshinyt/Project-MultiLoader/commits/main'
+        try:
+            resp = requests.get(api_url, timeout=5, headers={'Accept': 'application/vnd.github.v3+json'})
+            if resp.status_code != 200:
+                return
+            remote_commit = resp.json().get('sha', '')
+        except Exception:
+            return  # No internet / API down — silently skip
+
+        if not remote_commit or remote_commit == local_commit:
+            # Already up to date
+            print(f"  {_GN}✔  MultiLoader is up to date.{_R}")
+            print()
+            return
+
+        # New commit available — show prompt
+        print(f"  {_B}{_YL}╔══════════════════════════════════════════════════╗{_R}")
+        print(f"  {_B}{_YL}║  🔔  UPDATE AVAILABLE                           ║{_R}")
+        print(f"  {_B}{_YL}╠══════════════════════════════════════════════════╣{_R}")
+        print(f"  {_B}{_YL}║{_R}  Local  : {_GY}{local_commit[:12]}...{_R}               {_B}{_YL}║{_R}")
+        print(f"  {_B}{_YL}║{_R}  Remote : {_CY}{remote_commit[:12]}...{_R}               {_B}{_YL}║{_R}")
+        print(f"  {_B}{_YL}╚══════════════════════════════════════════════════╝{_R}")
+        print()
+
+        try:
+            answer = input(f"  {_B}{_CY}❯ A new update is available! Update now? [Y/n]:{_R} ").strip().lower()
+        except (EOFError, KeyboardInterrupt):
+            answer = 'n'
+
+        if answer in ('', 'y', 'yes'):
+            print(f"\n  {_CY}⚙  Pulling latest changes...{_R}")
+            pull = subprocess.run(
+                ['git', 'pull'],
+                cwd=os.path.dirname(os.path.abspath(__file__))
+            )
+            if pull.returncode == 0:
+                print(f"\n  {_GN}✔  Update complete! Restarting...{_R}\n")
+                # Re-launch this script with the same arguments so the new code runs
+                os.execv(sys.executable, [sys.executable] + sys.argv)
+            else:
+                print(f"\n  {_RD}❌  git pull failed. Continuing with current version.{_R}\n")
+        else:
+            print(f"\n  {_GY}Skipping update. Continuing with current version.{_R}\n")
+
+    except Exception as e:
+        # Never crash the app due to update check failure
+        print(f"  {_GY}⚠  Update check failed: {e}{_R}")
+        print()
+
+
 def startup_menu():
     """Interactive startup menu — choose Local or Ngrok access mode."""
     print_banner()
@@ -859,6 +922,9 @@ def _ensure_pyngrok():
 if __name__ == '__main__':
     import sys
     PORT = 8080
+
+    print_banner()
+    check_for_updates()
 
     mode = startup_menu()
 

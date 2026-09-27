@@ -11,9 +11,9 @@ Welcome to the official **MultiLoader User Guide**! MultiLoader is equipped with
 > 1. **Update Python:** MultiLoader performs best on **Python 3.10 or Python 3.14**. If you have an older version of Python installed on your computer (e.g. 3.8/3.9), **please upgrade or reinstall Python**!
 > 2. **Update yt-dlp:** Websites update their anti-bot protections almost daily. Always keep `yt-dlp` on the latest version by running:
 >    ```bash
->    pip install -U yt-dlp -r requirements.txt
+>    pip install -r requirements.txt
 >    ```
-> 3. **Re-install Requirements:** If you switched or upgraded Python versions, remember to reinstall requirements using `py -m pip install -U -r requirements.txt`.
+> 3. **Re-install Requirements:** If you switched or upgraded Python versions, remember to reinstall requirements using `py -m pip install -r requirements.txt`.
 
 ---
 
@@ -40,7 +40,7 @@ Clone the repository and install dependencies:
 ```bash
 git clone https://github.com/ailovegenshinyt/Project-MultiLoader.git
 cd Project-MultiLoader
-pip install -U yt-dlp -r requirements.txt
+pip install -r requirements.txt
 ```
 
 ### 2. Launching the App
