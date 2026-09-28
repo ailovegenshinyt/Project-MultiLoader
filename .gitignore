@@ -63,7 +63,6 @@ desktop.ini
 # Installers - distributed via GitHub Releases, not committed to the repo
 SMART_INSTALLER.bat
 FULL_AUTO_INSTALLER.bat
-launcher_template.bat
 INSTALLER_README.md
 
 # Temp / test scripts left from development
